@@ -13,10 +13,11 @@ class TestCreature(unittest.TestCase):
         self.assertEqual(len(links), 4)
 
     def testExpandedLinks(self):
-        c = creature.Creature(gene_count=4)
-        links = c.get_flat_links()
-        expanded_links = c.get_expanded_links()
-        self.assertGreaterEqual(len(expanded_links), len(links))
+        for i in range(100):
+            c = creature.Creature(gene_count=4)
+            links = c.get_flat_links()
+            expanded_links = c.get_expanded_links()
+            self.assertGreaterEqual(len(expanded_links), len(links))
 
 
 unittest.main()

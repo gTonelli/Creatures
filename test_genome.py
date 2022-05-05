@@ -1,6 +1,7 @@
 import unittest
 import genome
 import numpy as np
+from xml.dom.minidom import getDOMImplementation
 
 
 class GenomeTest(unittest.TestCase):
@@ -96,6 +97,13 @@ class GenomeTest(unittest.TestCase):
         genome_dicts = genome.Genome.get_genome_dicts(dna, spec)
         links = genome.Genome.genome_to_links(genome_dicts)
         self.assertEqual(len(links), 3)
+
+    def testLinkToXML(self):
+        link = genome.URDFLink(name="A", parent_name="None", recur=1)
+        dom_impl = getDOMImplementation()
+        xmlDOM = dom_impl.createDocument(None, "robot", None)
+        xml_string = link.to_link_xml(xmlDOM)
+        self.assertIsNotNone(xml_string)
 
 
 unittest.main()
