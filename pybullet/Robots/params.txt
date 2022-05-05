@@ -1,0 +1,25 @@
+link:
+
+0 link-shape -> Cylinder or box
+1 link-length -> 0-1
+2 link-radius -> 0-1
+3 link-recurrence -> 1-4
+4 link-mass -> 0-1
+
+joint:
+
+5 joint-type -> revolute or fixed
+6 joint-parent -> 0 -> num links
+7 joint-axis-xyz -> 3 options [1,0,0] or [0,1,0] or [0,0,1]
+8 joint-origin-rpy-1 -> 0-two-pi
+9 joint-origin-rpy-2 -> 0-two-pi
+10 joint-origin-rpy-3 -> 0-two-pi
+11 joint-origin-xyz-1 -> 0-1
+12 joint-origin-xyz-2 -> 0-1
+13 joint-origin-xyz-3 -> 0-1
+
+control:
+
+14 control-waveform: sine / pulse / ramp
+15 control-amp: 0-0.25
+16 control-freq: 0 -> 1
