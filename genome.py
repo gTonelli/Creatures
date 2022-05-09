@@ -86,7 +86,7 @@ class Genome():
         for genome_dict in genome_dicts:
             link_name = str(link_index)
             parent_index = genome_dict["joint-parent"] * len(parent_names)
-            recur = int(round(genome_dict["link-recurrence"]))
+            recur = int(math.ceil(genome_dict["link-recurrence"]))
             parent_name = parent_names[int(parent_index)]
             link = URDFLink(
                 name=link_name, parent_name=parent_name, recur=recur+1,
