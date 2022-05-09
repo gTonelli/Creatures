@@ -151,4 +151,15 @@ class URDFLink:
         self.control_freq = control_freq
 
     def to_link_xml(self, xmlDOM):
-        return ""
+        link_tag = xmlDOM.createElement("link")
+        link_tag.setAttribute("name", self.name)
+        visual_tag = xmlDOM.createElement('visual')
+        geometry_tag = xmlDOM.createElement("geometry")
+        cylinder_tag = xmlDOM.createElement("cylinder")
+        cylinder_tag.setAttribute("length", str(self.link_length))
+        cylinder_tag.setAttribute("radius", str(self.link_radius))
+        geometry_tag.appendChild(cylinder_tag)
+        visual_tag.appendChild(geometry_tag)
+        link_tag.appendChild(visual_tag)
+
+        return link_tag.toprettyxml()

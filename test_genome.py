@@ -103,6 +103,7 @@ class GenomeTest(unittest.TestCase):
         dom_impl = getDOMImplementation()
         xmlDOM = dom_impl.createDocument(None, "robot", None)
         xml_string = link.to_link_xml(xmlDOM)
+        print(xml_string)
         self.assertIsNotNone(xml_string)
 
 
