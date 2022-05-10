@@ -98,6 +98,16 @@ class GenomeTest(unittest.TestCase):
         links = genome.Genome.genome_to_links(genome_dicts)
         self.assertEqual(len(links), 3)
 
+    def testGetLinksUniqueNames(self):
+        spec = genome.Genome.get_gene_spec()
+        dna = genome.Genome.get_random_genome(len(spec), 3)
+        genome_dicts = genome.Genome.get_genome_dicts(dna, spec)
+        links = genome.Genome.genome_to_links(genome_dicts)
+
+        for l in links:
+            names = [link.name for link in links if link.name == l.name]
+            self.assertEqual(len(names), 1)
+
     def testLinkToXML(self):
         link = genome.URDFLink(name="A", parent_name="None", recur=1)
         dom_impl = getDOMImplementation()
