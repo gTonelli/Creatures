@@ -225,9 +225,11 @@ class URDFLink:
 
         origin_tag = xmlDOM.createElement("origin")
 
-        rpy = str(self.joint_origin_rpy_1) + " " + \
-            str(self.joint_origin_rpy_2) + " " + str(self.joint_origin_rpy_3)
+        rpy3 = self.joint_origin_rpy_3 * self.sibling_index
+        rpy = str(self.joint_origin_rpy_1) + " " + str(self.joint_origin_rpy_2) + \
+            " " + str(rpy3)
         origin_tag.setAttribute("rpy", rpy)
+
         xyz = str(self.joint_origin_xyz_1) + " " + \
             str(self.joint_origin_xyz_2) + " " + str(self.joint_origin_xyz_3)
         origin_tag.setAttribute("xyz", xyz)

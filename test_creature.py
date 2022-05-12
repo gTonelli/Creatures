@@ -26,7 +26,7 @@ class TestCreature(unittest.TestCase):
         self.assertIsNotNone(xml_str)
 
     def testLoadXML(self):
-        c = creature.Creature(gene_count=2)
+        c = creature.Creature(gene_count=12)
         xml_str = c.to_xml()
         with open('test.urdf', 'w') as f:
             f.write(xml_str)

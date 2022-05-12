@@ -112,7 +112,7 @@ class GenomeTest(unittest.TestCase):
         link = genome.URDFLink(name="A", parent_name="None", recur=1)
         dom_impl = getDOMImplementation()
         xmlDOM = dom_impl.createDocument(None, "robot", None)
-        xml_string = link.to_link_xml(xmlDOM)
+        xml_string = link.to_link_element(xmlDOM)
         print(xml_string)
         self.assertIsNotNone(xml_string)
 
