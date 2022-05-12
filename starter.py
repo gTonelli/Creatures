@@ -1,5 +1,5 @@
 import pybullet as p
-import pybullet_data as pd
+# import pybullet_data as pd
 
 p.connect(p.GUI)
 p.setPhysicsEngineParameter(enableFileCaching=0)
