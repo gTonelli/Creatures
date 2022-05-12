@@ -1,5 +1,37 @@
 import genome
 from xml.dom.minidom import getDOMImplementation
+from enum import Enum
+import numpy as np
+
+
+class MotorType(Enum):
+    PULSE = 1
+    SINE = 2
+
+
+class Motor:
+    def __init__(self, control_waveform, control_amplitude, control_frequency):
+        if control_waveform <= 0.5:
+            self.motor_type = MotorType.PULSE
+        else:
+            self.motor_type = MotorType.SINE
+        self.amp = control_amplitude
+        self.freq = control_frequency
+        self.phase = 0
+
+    def get_output(self):
+        self.phase = (self.phase + self.freq) % (np.pi * 2)
+
+        if self.motor_type == MotorType.PULSE:
+            if self.phase < np.pi:
+                output = 1
+            else:
+                output = -1
+
+        if self.motor_type == MotorType.SINE:
+            output = np.sin(self.phase)
+
+        return output
 
 
 class Creature:
@@ -45,3 +77,14 @@ class Creature:
             robot_tag.appendChild(link.to_joint_element(adom))
         robot_tag.setAttribute("name", "joe")  # Robots name!
         return '<?xml version="1.0"?>' + robot_tag.toprettyxml()
+
+    def get_motors(self):
+        assert(self.expanded_links != None)
+        if self.motors == None:
+            motors = []
+            for i in range(1, len(self.expanded_links)):
+                l = self.expanded_links[i]
+                m = Motor(l.control_waveform, l.control_amp, l.control_freq)
+                motors.append(m)
+            self.motors = motors
+        return self.motors

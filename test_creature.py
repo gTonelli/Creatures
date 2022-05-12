@@ -1,6 +1,7 @@
 import unittest
 import creature
 import pybullet as p
+import numpy as np
 
 
 class TestCreature(unittest.TestCase):
@@ -26,21 +27,34 @@ class TestCreature(unittest.TestCase):
         self.assertIsNotNone(xml_str)
 
     def testLoadXML(self):
-        c = creature.Creature(gene_count=12)
+        c = creature.Creature(gene_count=3)
         xml_str = c.to_xml()
         with open('test.urdf', 'w') as f:
             f.write(xml_str)
         p.connect(p.DIRECT)
-
-        # p.connect(p.GUI)
-        # p.setPhysicsEngineParameter(enableFileCaching=0)
-        # p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
-        # plane_shape = p.createCollisionShape(p.GEOM_PLANE)
-        # floor = p.createMultiBody(plane_shape, plane_shape)
-        # p.setGravity(0, 0, -10)
-
         cid = p.loadURDF('test.urdf')
         self.assertIsNotNone(cid)
+
+    def testMotor(self):
+        m = creature.Motor(0.1, 0.5, 0.5)
+        self.assertIsNotNone(m)
+
+    def testMotorValuePulse(self):
+        m = creature.Motor(0.1, 0.5, 0.5)
+        self.assertEqual(m.get_output(), 1)
+
+    def testMotorValueSine(self):
+        m = creature.Motor(0.6, 0.5, 0.5)
+        k = 2
+        for i in range(k):
+            m.get_output()
+        self.assertGreater(m.get_output(), 0)
+
+    def testXreatureMotors(self):
+        c = creature.Creature(gene_count=4)
+        ls = c.get_expanded_links()
+        ms = c.get_motors()
+        self.assertEqual(len(ls) - 1, len(ms))
 
 
 unittest.main()
