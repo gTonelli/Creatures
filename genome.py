@@ -75,6 +75,8 @@ class Genome():
                 c_copy.name = unique_name
                 c_copy.sibling_index = sibling_index
                 expanded_links.append(c_copy)
+                assert c.parent_name != c.name, "Genome::expandLinks: link joined to itself: " + \
+                    c.name + " joins " + c.parent_name
                 Genome.expandLinks(c, unique_name, flat_links, expanded_links)
 
     @staticmethod
@@ -82,7 +84,6 @@ class Genome():
         links = []
         link_index = 0
         parent_names = [str(link_index)]
-
         for genome_dict in genome_dicts:
             link_name = str(link_index)
             parent_index = genome_dict["joint-parent"] * len(parent_names)
@@ -149,8 +150,9 @@ class URDFLink:
         self.control_waveform = control_waveform
         self.control_amp = control_amp
         self.control_freq = control_freq
+        self.sibling_index = 1
 
-    def to_link_xml(self, xmlDOM):
+    def to_link_element(self, xmlDOM):
         link_tag = xmlDOM.createElement("link")
         link_tag.setAttribute("name", self.name)
         visual_tag = xmlDOM.createElement('visual')
@@ -158,8 +160,81 @@ class URDFLink:
         cylinder_tag = xmlDOM.createElement("cylinder")
         cylinder_tag.setAttribute("length", str(self.link_length))
         cylinder_tag.setAttribute("radius", str(self.link_radius))
+
         geometry_tag.appendChild(cylinder_tag)
         visual_tag.appendChild(geometry_tag)
-        link_tag.appendChild(visual_tag)
 
-        return link_tag.toprettyxml()
+        collision_tag = xmlDOM.createElement("collision")
+        collision_geometry_tag = xmlDOM.createElement("geometry")
+        collision_cylinder_tag = xmlDOM.createElement("cylinder")
+        collision_cylinder_tag.setAttribute("length", str(self.link_length))
+        collision_cylinder_tag.setAttribute("radius", str(self.link_radius))
+
+        collision_geometry_tag.appendChild(collision_cylinder_tag)
+        collision_tag.appendChild(collision_geometry_tag)
+
+        inertial_tag = xmlDOM.createElement("inertial")
+        mass_tag = xmlDOM.createElement("mass")
+
+        mass = np.pi * (self.link_radius * self.link_radius) * self.link_length
+        mass_tag.setAttribute("value", str(mass))
+        inertia_tag = xmlDOM.createElement("inertia")
+
+        inertia_tag.setAttribute("ixx", "0.03")
+        inertia_tag.setAttribute("iyy", "0.03")
+        inertia_tag.setAttribute("izz", "0.03")
+        inertia_tag.setAttribute("ixy", "0")
+        inertia_tag.setAttribute("ixz", "0")
+        inertia_tag.setAttribute("iyx", "0")
+        inertial_tag.appendChild(mass_tag)
+        inertial_tag.appendChild(inertia_tag)
+
+        link_tag.appendChild(visual_tag)
+        link_tag.appendChild(collision_tag)
+        link_tag.appendChild(inertial_tag)
+
+        return link_tag
+
+    def to_joint_element(self, xmlDOM):
+
+        joint_tag = xmlDOM.createElement("joint")
+        joint_tag.setAttribute("name", self.name + "_to_" + self.parent_name)
+        if self.joint_type >= 0.5:
+            joint_tag.setAttribute("type", "revolute")
+        else:
+            joint_tag.setAttribute("type", "revolute")
+
+        parent_tag = xmlDOM.createElement("parent")
+        parent_tag.setAttribute("link", self.parent_name)
+        child_tag = xmlDOM.createElement("child")
+        child_tag.setAttribute("link", self.name)
+        axis_tag = xmlDOM.createElement("axis")
+        if self.joint_axis_xyz <= 0.33:
+            axis_tag.setAttribute("xyz", "1 0 0")
+        if self.joint_axis_xyz > 0.33 and self.joint_axis_xyz <= 0.66:
+            axis_tag.setAttribute("xyz", "0 1 0")
+        if self.joint_axis_xyz > 0.66:
+            axis_tag.setAttribute("xyz", "0 0 1")
+
+        limit_tag = xmlDOM.createElement("limit")
+        # effort upper lower velocity
+        limit_tag.setAttribute("effort", "1")
+        limit_tag.setAttribute("upper", "-3.1415")
+        limit_tag.setAttribute("lower", "3.1415")
+        limit_tag.setAttribute("velocity", "1")
+
+        origin_tag = xmlDOM.createElement("origin")
+
+        rpy = str(self.joint_origin_rpy_1) + " " + \
+            str(self.joint_origin_rpy_2) + " " + str(self.joint_origin_rpy_3)
+        origin_tag.setAttribute("rpy", rpy)
+        xyz = str(self.joint_origin_xyz_1) + " " + \
+            str(self.joint_origin_xyz_2) + " " + str(self.joint_origin_xyz_3)
+        origin_tag.setAttribute("xyz", xyz)
+
+        joint_tag.appendChild(parent_tag)
+        joint_tag.appendChild(child_tag)
+        joint_tag.appendChild(axis_tag)
+        joint_tag.appendChild(limit_tag)
+        joint_tag.appendChild(origin_tag)
+        return joint_tag
