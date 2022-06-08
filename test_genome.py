@@ -113,8 +113,27 @@ class GenomeTest(unittest.TestCase):
         dom_impl = getDOMImplementation()
         xmlDOM = dom_impl.createDocument(None, "robot", None)
         xml_string = link.to_link_element(xmlDOM)
-        print(xml_string)
         self.assertIsNotNone(xml_string)
+
+    def testCrossover(self):
+        g1 = np.array([[1,2,3], [4,5,6], [7,8,9]])
+        g2 = np.array([[10,11,12], [13,14,15], [16,17,18]])
+        g3 = genome.Genome.crossover(g1, g2)
+        self.assertEqual(len(g3), len(g1))
+
+    def testPoint(self):
+        g1 = np.array([[1.,2.,3.], [4.,5.,6.], [7.,8.,9.]])
+        genome.Genome.point_mutate(g1, rate=0.5, amount=0.25)
+
+    def testShrink(self):
+        g1 = np.array([[1.,2.,3.], [4.,5.,6.], [7.,8.,9.]])
+        g2 = genome.Genome.shrink_mutate(g1, rate=1)
+        self.assertNotEqual(len(g1), len(g2))
+
+    def testGrow(self):
+        g1 = np.array([[1.,2.,3.], [4.,5.,6.], [7.,8.,9.]])
+        g2 = genome.Genome.grow_mutate(g1, rate=1)
+        self.assertGreater(len(g2), len(g1))
 
 
 unittest.main()
