@@ -22,6 +22,9 @@ with open('motor_test.urdf', 'w') as f:
 cid = p.loadURDF('motor_test.urdf')
 
 p.setRealTimeSimulation(1)
+c.update_position([0,0,0])
+
+p.resetBasePositionAndOrientation(cid, [0, 0, 3], [0, 0, 0, 1])
 
 while True:
     for jid in range(p.getNumJoints(cid)):
@@ -29,4 +32,8 @@ while True:
         p.setJointMotorControl2(
             cid, jid, controlMode=p.VELOCITY_CONTROL, targetVelocity=m.get_output(), force=5)
 
+    position, orientation = p.getBasePositionAndOrientation(cid)
+    c.update_position(position)
+    
+    print(c.get_distance_travelled())
     time.sleep(0.1)
