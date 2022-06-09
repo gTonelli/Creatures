@@ -1,3 +1,5 @@
 pybullet/Lib/
 __pycache__/
 *.urdf
+test/
+elites/

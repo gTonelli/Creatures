@@ -2,7 +2,7 @@ import unittest
 import genome
 import numpy as np
 from xml.dom.minidom import getDOMImplementation
-
+import os
 
 class GenomeTest(unittest.TestCase):
 
@@ -134,6 +134,41 @@ class GenomeTest(unittest.TestCase):
         g1 = np.array([[1.,2.,3.], [4.,5.,6.], [7.,8.,9.]])
         g2 = genome.Genome.grow_mutate(g1, rate=1)
         self.assertGreater(len(g2), len(g1))
+
+    def testToCSV(self):
+        g1 = [[1,2,3]]
+        genome.Genome.dna_to_csv(g1, 'test/test.csv')
+        self.assertTrue(os.path.exists('test/test.csv'))
+
+    def testToCSVContent(self):
+        g1 = [[1,2,3]]
+        genome.Genome.dna_to_csv(g1, 'test/test.csv')
+        expect = "1,2,3,\n"
+        with open('test/test.csv') as f:
+            csv_string = f.read()
+
+        self.assertEqual(csv_string, expect)
+
+    def testToCSVContent2(self):
+        g1 = [[1,2,3], [4,5,6]]
+        genome.Genome.dna_to_csv(g1, 'test/test.csv')
+        expect = "1,2,3,\n4,5,6,\n"
+        with open('test/test.csv') as f:
+            csv_string = f.read()
+
+        self.assertEqual(csv_string, expect)
+
+    def testFromCSV(self):
+        g1 = [[1,2,3]]
+        genome.Genome.dna_to_csv(g1, 'test/test.csv')
+        g2 = genome.Genome.dna_from_csv('test/test.csv')
+        self.assertTrue(np.array_equal(g1, g2))
+
+    def testFromCSV2(self):
+        g1 = [[1,2,3], [4,5,6]]
+        genome.Genome.dna_to_csv(g1, 'test/test.csv')
+        g2 = genome.Genome.dna_from_csv('test/test.csv')
+        self.assertTrue(np.array_equal(g1, g2))
 
 
 unittest.main()

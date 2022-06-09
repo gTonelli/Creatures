@@ -45,6 +45,18 @@ class Creature:
         self.get_expanded_links()
         self.start_position = None
         self.last_position = None
+        self.distance = 0
+
+    def set_dna(self, dna):
+        self.dna = dna
+        self.flat_links = None
+        self.expanded_links = None
+        self.motors = None
+        self.get_flat_links()
+        self.get_expanded_links()
+        self.start_position = None
+        self.last_position = None
+        self.distance = 0
 
     def get_flat_links(self):
         genome_dicts = genome.Genome.get_genome_dicts(self.dna, self.spec)
@@ -94,12 +106,17 @@ class Creature:
         return self.motors
 
     def update_position(self, position):
+        if self.last_position != None:
+            p1 = np.array(self.last_position)
+            p2 = np.array(position)
+            changed = np.linalg.norm(p1-p2)
+            self.distance = self.distance + changed
         if self.start_position == None:
             self.start_position = position
         else:
             self.last_position = position
 
     def get_distance_travelled(self):
-        p1 = np.array(self.start_position)
-        p2 = np.array(self.last_position)
-        return np.linalg.norm(p1-p2)
+        # p1 = np.array(self.start_position)
+        # p2 = np.array(self.last_position)
+        return self.distance

@@ -117,8 +117,17 @@ class Genome():
     
     @staticmethod
     def crossover(g1, g2):
+        """
+        g1 and g2 are raw dna data - lists of lists of floats
+        """
         xo = np.random.randint(len(g1)) # TODO: Change this to generate a number so that the if statement below is needless
         # xo = np.random.randint(1, len(g1))
+        if xo == 0:
+            return g2
+
+        if xo == len(g1) - 1:
+            return g1
+
         if xo > len(g2):
             xo = len(g2) - 1
 
@@ -132,9 +141,13 @@ class Genome():
                 index = np.random.randint(len(gene))
                 r = (np.random.rand() - 0.5) * amount
                 gene[index] = gene[index] + r
+        
+        return genes
 
     @staticmethod
     def shrink_mutate(genes, rate):
+        if len(genes) == 1:
+            return genes
         if np.random.rand() < rate:
             index = np.random.randint(len(genes))
             genes = np.delete(genes, index, 0)
@@ -146,6 +159,35 @@ class Genome():
             gene = Genome.get_random_gene(len(genes[0]))
             genes = np.append(genes, [gene], axis=0)
         return genes
+
+    @staticmethod
+    def dna_to_csv(dna, csv_file):
+        csv_string = ""
+
+        for gene in dna:
+            for value in gene:
+                csv_string = csv_string + str(value) + ","
+            csv_string = csv_string + '\n'
+
+        with open(csv_file, 'w') as f:
+            f.write(csv_string)
+    
+    @staticmethod
+    def dna_from_csv(filepath):
+        csv_string = ""
+        with open(filepath) as f:
+            csv_string = f.read()
+
+        lines = csv_string.split('\n')
+        dna = []
+        
+        for line in lines:
+            values = line.split(',')
+            gene = [float(v) for v in values if v != '']
+            if len(gene) > 0:
+                dna.append(gene)
+        return dna
+
 
 
 
